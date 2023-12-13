@@ -1,7 +1,6 @@
 import streamlit as st
 from st_audiorec import st_audiorec
 import numpy as np
-import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 
@@ -11,7 +10,6 @@ st.write("""
 Запишите свой голос
 """)
 
-# Ваш код для записи аудио
 wav_audio_data = st_audiorec()
 
 # Проверка, что запись прошла успешно
@@ -27,9 +25,6 @@ if wav_audio_data is not None:
     librosa.display.specshow(D, sr=44100, x_axis='time', y_axis='log')
     plt.colorbar(format='%+2.0f dB')
     plt.title('Spectrogram')
-    plt.show()
-
-    # Отображение спектрограммы в Streamlit
     st.pyplot()
 
 
