@@ -10,7 +10,7 @@ wav_audio_data = st_audiorec()
 
 if wav_audio_data is not None:
     st.audio(wav_audio_data, format='audio/wav')
-
-st.write(wav_audio_data)
+a = st.audio(wav_audio_data, format='audio/wav')
+st.write(a)
 
 
