@@ -68,4 +68,5 @@ tzdata==2023.3
 tzlocal==5.2
 urllib3==2.1.0
 validators==0.22.0
+whisper==1.1.10
 zipp==3.17.0
