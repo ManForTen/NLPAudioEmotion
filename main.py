@@ -15,7 +15,10 @@ wav_audio_data = st_audiorec()
 # Проверка, что запись прошла успешно
 if wav_audio_data is not None:
     # Преобразование аудио в одномерный массив с плавающей точкой
-    audio_array = np.squeeze(wav_audio_data).astype(float)
+    audio_array = np.squeeze(wav_audio_data)
+
+    # Нормализация аудио к диапазону [-1, 1]
+    audio_array = audio_array / np.max(np.abs(audio_array))
 
     # Создание спектрограммы с использованием librosa
     D = librosa.amplitude_to_db(np.abs(librosa.stft(audio_array)), ref=np.max)
