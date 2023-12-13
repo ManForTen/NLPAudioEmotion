@@ -18,6 +18,7 @@ wav_audio_data = st_audiorec()
 
 
 # Загрузка аудиофайла
+# Загрузка аудиофайла
 uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
 
 if uploaded_file:
@@ -51,7 +52,8 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
-    audio = whisper.load_audio(temp_file_path)
+    # Read the audio file using soundfile
+    audio, _ = sf.read(temp_file_path)
     audio = whisper.pad_or_trim(audio)
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
