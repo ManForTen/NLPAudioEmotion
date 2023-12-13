@@ -44,12 +44,3 @@ if uploaded_file:
     ax_spec.set_title('Spectrogram')
     st.pyplot(fig_spec)
 
-    st.subheader("Распознавание текста:")
-    audio = whisper.load_audio(uploaded_file)
-    audio = whisper.pad_or_trim(audio)
-    mel = whisper.log_mel_spectrogram(audio).to(model.device)
-    _, probs = model.detect_language(mel)
-    st.write(f"Язык аудио: {max(probs, key=probs.get)}")
-    options = whisper.DecodingOptions(fp16=False)
-    result = whisper.decode(model, mel, options)
-    st.write("Текст:", result.text)
