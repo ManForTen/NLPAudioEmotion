@@ -1,5 +1,3 @@
-from io import BytesIO
-
 import streamlit as st
 from st_audiorec import st_audiorec
 import numpy as np
@@ -47,8 +45,7 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
-    audio_bytes = uploaded_file.read()
-    audio = whisper.load_audio(BytesIO(audio_bytes))
+    audio = whisper.load_audio(y)
     audio = whisper.pad_or_trim(audio)
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
