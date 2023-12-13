@@ -17,8 +17,9 @@ if wav_audio_data is not None:
     # Преобразование аудио в одномерный массив с плавающей точкой
     audio_array = np.squeeze(wav_audio_data)
 
-    # Нормализация аудио к диапазону [-1, 1]
-    audio_array = audio_array / np.max(np.abs(audio_array))
+    # Нормализация аудио, учитывая возможность деления на 0
+    max_abs_value = np.max(np.abs(audio_array))
+    audio_array = audio_array / max_abs_value if max_abs_value != 0 else audio_array
 
     # Создание спектрограммы с использованием librosa
     D = librosa.amplitude_to_db(np.abs(librosa.stft(audio_array)), ref=np.max)
