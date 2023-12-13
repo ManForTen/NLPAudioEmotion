@@ -14,22 +14,8 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-wav_audio_data = st_audiorec()
-
-if wav_audio_data is not None:
-    # Создаем временный файл для сохранения аудио
-    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-    temp_audio_path = temp_audio_file.name
-
-    try:
-        # Сохраняем аудио во временный файл
-        sf.write(temp_audio_path, wav_audio_data, 44100)
-
-        st.write("Аудио успешно сохранено. Путь к файлу:", temp_audio_path)
-    except Exception as e:
-        st.error(f"Произошла ошибка при сохранении аудио: {e}")
-    finally:
-        # Удаляем временный файл после использования
-        os.remove(temp_audio_path)
-else:
-    st.warning("Аудио не было записано.")
+uploaded_files = st.file_uploader("Загрузите записанный голос", accept_multiple_files=True)
+for uploaded_file in uploaded_files:
+    bytes_data = uploaded_file.read()
+    st.write("filename:", uploaded_file.name)
+    st.write(bytes_data)
