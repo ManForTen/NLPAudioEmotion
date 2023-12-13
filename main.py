@@ -1,13 +1,14 @@
 import streamlit as st
 from st_audiorec import st_audiorec
+import torch
+import torchaudio
+import torchaudio.transforms as T
 import numpy as np
 import librosa.display
 import matplotlib.pyplot as plt
 import whisper
-import os
-import tempfile
-import soundfile as sf
 
+# Загрузка модели Whisper
 model = whisper.load_model("base")
 
 st.write("""
@@ -17,23 +18,16 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-
-# Загрузка аудиофайла
 # Загрузка аудиофайла
 uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
 
 if uploaded_file:
     st.write("Файл успешно загружен!")
 
-    # Save the uploaded file to a temporary file
-    temp_file_path = os.path.join(tempfile.gettempdir(), "uploaded_audio.wav")
-    with open(temp_file_path, "wb") as temp_file:
-        temp_file.write(uploaded_file.read())
-
     # Преобразование байтов в аудиофайл
-    y, sr = librosa.load(temp_file_path, sr=None)
+    y, sr = librosa.load(uploaded_file, sr=None)
 
-    st.audio(temp_file_path, format='audio/wav')
+    st.audio(uploaded_file, format='audio/wav')
 
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
@@ -47,18 +41,26 @@ if uploaded_file:
     # Построение спектрограммы
     st.subheader("Spectrogram:")
     fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
-    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
+    transform = T.MelSpectrogram(sample_rate=sr, n_fft=400, hop_length=160, n_mels=128)
+    mel_spec = transform(torch.tensor(y).view(1, -1))
+    log_mel_spec = T.AmplitudeToDB()(mel_spec)
+    img = librosa.display.specshow(log_mel_spec[0].numpy(), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
     plt.colorbar(img, format='%+2.0f dB')
     ax_spec.set_title('Spectrogram')
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
-    # Read the audio file using soundfile
-    audio, _ = sf.read(temp_file_path)
+    audio = whisper.load_audio(uploaded_file)
     audio = whisper.pad_or_trim(audio)
-    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+
+    transform = T.MelSpectrogram(sample_rate=sr, n_fft=400, hop_length=160, n_mels=128)
+    mel_spec = transform(torch.tensor(audio).view(1, -1))
+    log_mel_spec = T.AmplitudeToDB()(mel_spec)
+
+    mel = log_mel_spec.to(model.device)
     _, probs = model.detect_language(mel)
     st.write(f"Язык аудио: {max(probs, key=probs.get)}")
+
     options = whisper.DecodingOptions(fp16=False)
     result = whisper.decode(model, mel, options)
     st.write("Текст:", result.text)
