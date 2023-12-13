@@ -4,6 +4,9 @@ import numpy as np
 import librosa.display
 import matplotlib.pyplot as plt
 
+import whisper
+
+model = whisper.load_model("medium")
 st.write("""
 # Лабораторная работа 6
 Запишите свой голос
@@ -12,25 +15,14 @@ st.write("""
 wav_audio_data = st_audiorec()
 
 if wav_audio_data is not None:
-    st.audio(wav_audio_data, format='audio/wav')
-
-    # Создание графика амплитуды
-    audio_array = np.squeeze(wav_audio_data)
-
-    # Проверка, что audio_array не пуст
-    if len(audio_array) > 0:
-        time = np.arange(0, len(audio_array)) / 44100  # Временная ось в секундах
-
-        plt.figure(figsize=(10, 4))
-        plt.plot(time, audio_array)
-        plt.title('График амплитуды')
-        plt.xlabel('Время (сек)')
-        plt.ylabel('Амплитуда')
-        st.pyplot()
-    else:
-        st.warning("Аудио-данные пусты.")
-else:
-    st.warning("Аудио не было записано.")
+    audio = whisper.load_audio(wav_audio_data)
+    audio = whisper.pad_or_trim(audio)
+    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    _, probs = model.detect_language(mel)
+    st.write(f"Язык аудио: {max(probs, key=probs.get)}")
+    options = whisper.DecodingOptions(fp16=False)
+    result = whisper.decode(model, mel, options)
+    st.write("Текст:", result.text)
 
 
 
