@@ -14,9 +14,10 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-st.write(wav_audio_data.count())
 
 if wav_audio_data is not None:
+
+    st.write(wav_audio_data.isalpha())
     # Создаем временный файл для сохранения аудио
     temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
     temp_audio_path = temp_audio_file.name
