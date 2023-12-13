@@ -19,7 +19,9 @@ if wav_audio_data is not None:
 
     # Нормализация аудио, учитывая возможность деления на 0
     max_abs_value = np.max(np.abs(audio_array))
-    audio_array = audio_array / max_abs_value if max_abs_value != 0 else audio_array
+
+    if max_abs_value != 0:
+        audio_array = audio_array / max_abs_value
 
     # Создание спектрограммы с использованием librosa
     D = librosa.amplitude_to_db(np.abs(librosa.stft(audio_array)), ref=np.max)
