@@ -1,5 +1,3 @@
-from typing import io
-
 import streamlit as st
 from st_audiorec import st_audiorec
 import torchaudio
