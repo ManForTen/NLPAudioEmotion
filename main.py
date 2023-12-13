@@ -2,7 +2,7 @@ import streamlit as st
 from st_audiorec import st_audiorec
 import torch
 import torchaudio
-from transformers import pipeline
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
 
 st.write("""
 # Лабораторная работа 6
@@ -26,17 +26,21 @@ if uploaded_file:
     st.subheader("Waveplot:")
     st.line_chart(y[0].numpy())
 
-    # Определение эмоции с использованием transformers
+    # Определение эмоции
     st.subheader("Эмоция:")
 
-    # Load pre-trained emotion classification model
-    classifier = pipeline('audio-classification', model='maksimekin/emotion-audio')
+    # Явная загрузка модели и токенизатора
+    model_name = "maksimekin/emotion-audio"
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    # Convert audio tensor to numpy array
-    audio_np = y[0].numpy()
+    # Преобразование аудио в текст с использованием токенизатора
+    inputs = tokenizer(" ".join(map(str, y[0].numpy())), return_tensors="pt", padding=True, truncation=True)
 
-    # Classify emotion
-    result = classifier(audio_np)
+    # Классификация эмоции
+    outputs = model(**inputs)
+    logits = outputs.logits
+    predicted_class = torch.argmax(logits, dim=1).item()
 
-    # Display the result
-    st.write(result)
+    # Отображение результата
+    st.write(f"Predicted Emotion: {predicted_class}")
