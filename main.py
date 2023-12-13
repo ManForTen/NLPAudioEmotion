@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import whisper
 
 
-model = whisper.load_model("medium")
+model = whisper.load_model("base")
 
 st.write("""
 # Лабораторная работа 6
