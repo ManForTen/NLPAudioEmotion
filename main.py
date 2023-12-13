@@ -33,7 +33,11 @@ if uploaded_file:
     ax_wave.set_title('Waveplot')
     ax_wave.set_xlabel('Время (сек.)')
     ax_wave.set_ylabel('Amplitude')
-    st.pyplot(fig_wave)
+
+    # Сохранение графика как изображения
+    waveplot_image = "waveplot.png"
+    fig_wave.savefig(waveplot_image)
+    st.image(waveplot_image)
 
     # Построение спектрограммы
     st.subheader("Spectrogram:")
@@ -41,4 +45,8 @@ if uploaded_file:
     librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
     plt.colorbar(format='%+2.0f dB')
     ax_spec.set_title('Spectrogram')
-    st.pyplot(fig_spec)
+
+    # Сохранение графика как изображения
+    spectrogram_image = "spectrogram.png"
+    fig_spec.savefig(spectrogram_image)
+    st.image(spectrogram_image)
