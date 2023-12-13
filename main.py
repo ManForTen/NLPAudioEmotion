@@ -27,6 +27,9 @@ for uploaded_file in uploaded_files:
     transform = T.MelSpectrogram(sample_rate=sample_rate, n_mels=128)
     mel_spectrogram = transform(audio_tensor)
 
+    # Нормализация значений спектрограммы в диапазон [0.0, 1.0]
+    normalized_mel_spectrogram = (mel_spectrogram - mel_spectrogram.min()) / (mel_spectrogram.max() - mel_spectrogram.min())
+
     # Вывод спектрограммы
     st.write(f"Спектрограмма для файла: {uploaded_file.name}")
-    st.image(mel_spectrogram[0].numpy(), caption='Мел-спектрограмма', use_column_width=True)
+    st.image(normalized_mel_spectrogram[0].numpy(), caption='Мел-спектрограмма', use_column_width=True)
