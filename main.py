@@ -28,13 +28,6 @@ if uploaded_file:
     st.subheader("Waveplot:")
     st.line_chart(y[0].numpy())
 
-    # Построение спектрограммы
-    st.subheader("Spectrogram:")
-    fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
-    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
-    plt.colorbar(img, format='%+2.0f dB')
-    ax_spec.set_title('Spectrogram')
-    st.pyplot(fig_spec)
 
     # Определение эмоции
     st.subheader("Эмоция:")
