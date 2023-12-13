@@ -22,10 +22,10 @@ uploaded_file = st.file_uploader("Загрузите аудиофайл (доп�
 if uploaded_file:
     st.write("Файл успешно загружен!")
 
-    # Save the uploaded file to a temporary file
-    temp_file_path = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name
-    with open(temp_file_path, "wb") as temp_file:
-        temp_file.write(uploaded_file.read())
+    # Create a temporary file and get the file path
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    temp_file_path = temp_file.name
+    temp_file.write(uploaded_file.read())
 
     st.audio(temp_file_path, format='audio/wav')
 
@@ -51,6 +51,9 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
+
+    # Close the temporary file before loading it
+    temp_file.close()
 
     # Load audio from the temporary file
     audio = whisper.load_audio(temp_file_path)
