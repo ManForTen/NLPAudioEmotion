@@ -12,4 +12,5 @@ if wav_audio_data is not None:
     st.audio(wav_audio_data, format='audio/wav')
 
 print(wav_audio_data)
+print("yes")
 
