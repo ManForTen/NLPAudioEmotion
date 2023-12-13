@@ -1,6 +1,5 @@
 # This is a sample Python script.
 import streamlit as st
-import sounddevice as sd
 import numpy as np
 from st_audiorec import st_audiorec
 
