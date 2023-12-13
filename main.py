@@ -41,7 +41,7 @@ if uploaded_file:
     # Построение спектрограммы
     st.subheader("Spectrogram:")
     fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
-    librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
-    plt.colorbar(format='%+2.0f dB')
+    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
+    plt.colorbar(img, format='%+2.0f dB')
     ax_spec.set_title('Spectrogram')
     st.pyplot(fig_spec)
