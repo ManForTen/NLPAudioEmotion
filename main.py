@@ -10,6 +10,7 @@ import numpy as np
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+from io import BytesIO
 
 st.write("""
 # Лабораторная работа 6
@@ -35,8 +36,8 @@ if uploaded_file:
     ax_wave.set_ylabel('Amplitude')
 
     # Сохранение графика как изображения
-    waveplot_image = "waveplot.png"
-    fig_wave.savefig(waveplot_image)
+    waveplot_image = BytesIO()
+    fig_wave.savefig(waveplot_image, format='png')
     st.image(waveplot_image)
 
     # Построение спектрограммы
@@ -47,6 +48,6 @@ if uploaded_file:
     ax_spec.set_title('Spectrogram')
 
     # Сохранение графика как изображения
-    spectrogram_image = "spectrogram.png"
-    fig_spec.savefig(spectrogram_image)
+    spectrogram_image = BytesIO()
+    fig_spec.savefig(spectrogram_image, format='png')
     st.image(spectrogram_image)
