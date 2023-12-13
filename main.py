@@ -29,14 +29,18 @@ if wav_audio_data is not None:
         # Читаем аудио из временного файла
         audio, sample_rate = whisper.read_wave(temp_audio_path)
 
-        mel = whisper.log_mel_spectrogram(audio).to(model.device)
-        _, probs = model.detect_language(mel)
-        st.write(f"Язык аудио: {max(probs, key=probs.get)}")
+        if audio.shape[1] == 1:
+            # Проверка, что audio - это моно (1 канал)
+            mel = whisper.log_mel_spectrogram(audio.squeeze()).to(model.device)
+            _, probs = model.detect_language(mel)
+            st.write(f"Язык аудио: {max(probs, key=probs.get)}")
 
-        options = whisper.DecodingOptions(fp16=False)
-        result = whisper.decode(model, mel, options)
+            options = whisper.DecodingOptions(fp16=False)
+            result = whisper.decode(model, mel, options)
 
-        st.write("Текст:", result.text)
+            st.write("Текст:", result.text)
+        else:
+            st.warning("Ожидается моноаудио (1 канал), а не стерео.")
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
     finally:
