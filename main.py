@@ -1,7 +1,7 @@
 # This is a sample Python script.
+from streamlit_audiorec import st_audiorec
 import streamlit as st
-import numpy as np
-from st_audiorec import st_audiorec
+
 
 st.write("""
 # My first app
