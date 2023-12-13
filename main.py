@@ -1,10 +1,11 @@
-import librosa
 import streamlit as st
-from matplotlib import pyplot as plt
 from st_audiorec import st_audiorec
 import torch
 import torchaudio
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
+import librosa.display
+import matplotlib.pyplot as plt
+import numpy as np
 
 st.write("""
 # Лабораторная работа 6
@@ -28,6 +29,13 @@ if uploaded_file:
     st.subheader("Waveplot:")
     st.line_chart(y[0].numpy())
 
+    # Построение спектрограммы
+    st.subheader("Spectrogram:")
+    fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
+    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y[0].numpy()), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
+    plt.colorbar(img, format='%+2.0f dB')
+    ax_spec.set_title('Spectrogram')
+    st.pyplot(fig_spec)
 
     # Определение эмоции
     st.subheader("Эмоция:")
