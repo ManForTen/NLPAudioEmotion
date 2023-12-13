@@ -21,7 +21,7 @@ wav_audio_data = st_audiorec()
 
 
 # Загрузка аудиофайла
-uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)")
+uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
 
 if uploaded_file:
     st.write("Файл успешно загружен!")
@@ -32,7 +32,7 @@ if uploaded_file:
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
     fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
-    librosa.display.waveshow(y, sr=sr, ax=ax_wave)
+    ax_wave.plot(np.linspace(0, len(y) / sr, len(y)), y)
     ax_wave.set_title('Waveplot')
     ax_wave.set_xlabel('Время (сек.)')
     ax_wave.set_ylabel('Amplitude')
