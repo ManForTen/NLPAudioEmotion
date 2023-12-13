@@ -3,6 +3,9 @@ from st_audiorec import st_audiorec
 import torchaudio
 import torchaudio.transforms as T
 import torch
+import soundfile as sf
+import os
+import tempfile
 
 st.write("""
 # Лабораторная работа 6
@@ -11,26 +14,22 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
+wav_audio_data = st_audiorec()
+
 if wav_audio_data is not None:
-    # Преобразование аудио в тензор
-    waveform, sample_rate = torchaudio.load(io.BytesIO(wav_audio_data), normalize=True)
+    # Создаем временный файл для сохранения аудио
+    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    temp_audio_path = temp_audio_file.name
 
-    # Если аудио стерео, преобразуем его в моно
-    if waveform.shape[0] == 2:
-        waveform = waveform.mean(dim=0, keepdim=True)
+    try:
+        # Сохраняем аудио во временный файл
+        sf.write(temp_audio_path, wav_audio_data, 44100)
 
-    # Применение преобразований, например, каскадного удаления шума
-    transform = T.Compose([
-        T.Resample(orig_freq=sample_rate, new_freq=16000),
-        T.Vad(sample_rate=16000),
-        T.MFCC(sample_rate=16000, n_mfcc=13)
-    ])
-
-    # Получение признаков
-    features = transform(waveform)
-
-    # Вывод результатов
-    st.write("Форма вейвформы:", waveform.shape)
-    st.write("Форма признаков:", features.shape)
+        st.write("Аудио успешно сохранено. Путь к файлу:", temp_audio_path)
+    except Exception as e:
+        st.error(f"Произошла ошибка при сохранении аудио: {e}")
+    finally:
+        # Удаляем временный файл после использования
+        os.remove(temp_audio_path)
 else:
     st.warning("Аудио не было записано.")
