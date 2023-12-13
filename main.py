@@ -18,33 +18,27 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-def plot_audio_info_with_emotion(uploaded_file):
-    try:
-        # Преобразование байтов в аудиофайл
-        y, sr = librosa.load(uploaded_file, sr=None)
+uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
 
-        # Построение графика временного сигнала (waveplot)
-        fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
-        librosa.display.waveshow(y, sr=sr, ax=ax_wave)
-        ax_wave.set_title('Waveplot')
-        ax_wave.set_xlabel('Время (сек.)')
-        ax_wave.set_ylabel('Amplitude')
-        ax_wave.set_title('Waveplot')
-        st.pyplot(fig_wave)
+if uploaded_file:
+    st.write("Файл успешно загружен!")
 
-        # Построение спектрограммы
-        fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
-        librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
-        plt.colorbar(format='%+2.0f dB')
-        ax_spec.set_title('Spectrogram')
-        st.pyplot(fig_spec)
+    # Преобразование байтов в аудиофайл
+    y, sr = librosa.load(uploaded_file, sr=None)
 
-    except Exception as e:
-        st.error(f"Ошибка при обработке файла: {e}")
+    # Построение графика временного сигнала (waveplot)
+    st.subheader("Waveplot:")
+    fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
+    librosa.display.waveshow(y, sr=sr, ax=ax_wave)
+    ax_wave.set_title('Waveplot')
+    ax_wave.set_xlabel('Время (сек.)')
+    ax_wave.set_ylabel('Amplitude')
+    st.pyplot(fig_wave)
 
-# Загрузка аудиофайлов и вывод графиков
-uploaded_files = st.file_uploader("Загрузите записанный голос", accept_multiple_files=True)
-
-for uploaded_file in uploaded_files:
-    st.write("filename:", uploaded_file.name)
-    plot_audio_info_with_emotion(uploaded_file)
+    # Построение спектрограммы
+    st.subheader("Spectrogram:")
+    fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
+    librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
+    plt.colorbar(format='%+2.0f dB')
+    ax_spec.set_title('Spectrogram')
+    st.pyplot(fig_spec)
