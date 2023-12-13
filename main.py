@@ -1,16 +1,8 @@
 import streamlit as st
 from st_audiorec import st_audiorec
-import torchaudio
-import torchaudio.transforms as T
-import torch
-import soundfile as sf
-import os
-import tempfile
 import numpy as np
-import librosa
 import librosa.display
 import matplotlib.pyplot as plt
-from io import BytesIO
 
 st.write("""
 # Лабораторная работа 6
