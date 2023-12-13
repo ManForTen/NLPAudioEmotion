@@ -19,7 +19,8 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-uploaded_files = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
+# Выбор загруженного .wav файла
+uploaded_files = st.file_uploader("Загрузите записанный голос", accept_multiple_files=True)
 
 # Для каждого загруженного файла
 for uploaded_file in uploaded_files:
