@@ -6,40 +6,47 @@ import whisper
 import soundfile as sf
 import numpy as np
 import tempfile
-import speech_recognition as sr
 
 st.write("""
 # Лабораторная работа 6
 Запишите свой голос
 """)
 
+wav_audio_data = st_audiorec()
 
+st.write(wav_audio_data.count())
 
-
-def record_audio():
-    r = sr.Recognizer()
-
-    with sr.Microphone() as source:
-        st.write("Говорите что-нибудь...")
-        audio = r.listen(source)
-
-    st.write("Запись завершена. Текст:")
+if wav_audio_data is not None:
+    # Создаем временный файл для сохранения аудио
+    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    temp_audio_path = temp_audio_file.name
 
     try:
-        text = r.recognize_google(audio, language="ru-RU")
-        st.write(text)
-    except sr.UnknownValueError:
-        st.write("Не удалось распознать речь")
-    except sr.RequestError as e:
-        st.write(f"Ошибка при обращении к сервису распознавания речи: {e}")
+        # Сохраняем аудио во временный файл
+        sf.write(temp_audio_path, wav_audio_data, 44100)
 
+        # Используем конструктор WhisperASR
+        model = whisper.WhisperASR(model_size="medium")
 
-def main():
-    st.title("Голосовая запись в Streamlit")
+        # Читаем аудио из временного файла
+        audio, sample_rate = whisper.read_wave(temp_audio_path)
 
-    if st.button("Начать запись"):
-        record_audio()
+        if audio.shape[1] == 1:
+            # Проверка, что audio - это моно (1 канал)
+            mel = whisper.log_mel_spectrogram(audio.squeeze()).to(model.device)
+            _, probs = model.detect_language(mel)
+            st.write(f"Язык аудио: {max(probs, key=probs.get)}")
 
+            options = whisper.DecodingOptions(fp16=False)
+            result = whisper.decode(model, mel, options)
 
-if __name__ == "__main__":
-    main()
+            st.write("Текст:", result.text)
+        else:
+            st.warning("Ожидается моноаудио (1 канал), а не стерео.")
+    except Exception as e:
+        st.error(f"Произошла ошибка: {e}")
+    finally:
+        # Удаляем временный файл после использования
+        os.remove(temp_audio_path)
+else:
+    st.warning("Аудио не было записано.")
