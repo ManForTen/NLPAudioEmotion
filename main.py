@@ -7,7 +7,6 @@ st.write("""
 # My first app
 Hello *world!*
 """)
-
 wav_audio_data = st_audiorec()
 
 if wav_audio_data is not None:
