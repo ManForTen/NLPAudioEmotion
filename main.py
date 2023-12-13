@@ -24,19 +24,19 @@ def plot_audio_info_with_emotion(uploaded_file):
         y, sr = librosa.load(uploaded_file, sr=None)
 
         # Построение графика временного сигнала (waveplot)
-        fig_wave = plt.figure(figsize=(12, 4))
-        librosa.display.waveshow(y, sr=sr)
-        plt.title('Waveplot')
-        plt.xlabel('Время (сек.)')
-        plt.ylabel('Amplitude')
-        plt.title('Waveplot')
+        fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
+        librosa.display.waveshow(y, sr=sr, ax=ax_wave)
+        ax_wave.set_title('Waveplot')
+        ax_wave.set_xlabel('Время (сек.)')
+        ax_wave.set_ylabel('Amplitude')
+        ax_wave.set_title('Waveplot')
         st.pyplot(fig_wave)
 
         # Построение спектрограммы
-        fig_spec = plt.figure(figsize=(10, 4))
-        librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time')
+        fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
+        librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
         plt.colorbar(format='%+2.0f dB')
-        plt.title('Spectrogram')
+        ax_spec.set_title('Spectrogram')
         st.pyplot(fig_spec)
 
     except Exception as e:
