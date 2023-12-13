@@ -1,8 +1,11 @@
+import os
+
 import streamlit as st
 from st_audiorec import st_audiorec
 import whisper
 import soundfile as sf
 import numpy as np
+import tempfile
 
 st.write("""
 # Лабораторная работа 6
@@ -12,30 +15,32 @@ st.write("""
 wav_audio_data = st_audiorec()
 
 if wav_audio_data is not None:
-    # Преобразование аудио в формат, поддерживаемый whisper
-    audio, sample_rate = whisper.read_wave(wav_audio_data)
+    # Создаем временный файл для сохранения аудио
+    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    temp_audio_path = temp_audio_file.name
 
-    if audio is not None:
-        # Убедимся, что audio - это двумерный массив
-        if len(audio.shape) == 2:
-            # Сохранение аудио в файл
-            audio_filename = "recorded_audio.wav"
-            sf.write(audio_filename, audio, sample_rate)
+    try:
+        # Сохраняем аудио во временный файл
+        sf.write(temp_audio_path, wav_audio_data, 44100)
 
-            # Используем конструктор WhisperASR
-            model = whisper.WhisperASR(model_size="medium")
+        # Используем конструктор WhisperASR
+        model = whisper.WhisperASR(model_size="medium")
 
-            mel = whisper.log_mel_spectrogram(audio).to(model.device)
-            _, probs = model.detect_language(mel)
-            st.write(f"Язык аудио: {max(probs, key=probs.get)}")
+        # Читаем аудио из временного файла
+        audio, sample_rate = whisper.read_wave(temp_audio_path)
 
-            options = whisper.DecodingOptions(fp16=False)
-            result = whisper.decode(model, mel, options)
+        mel = whisper.log_mel_spectrogram(audio).to(model.device)
+        _, probs = model.detect_language(mel)
+        st.write(f"Язык аудио: {max(probs, key=probs.get)}")
 
-            st.write("Текст:", result.text)
-        else:
-            st.warning("Некорректный формат аудио. Ожидается двумерный массив.")
-    else:
-        st.warning("Не удалось прочитать аудио.")
+        options = whisper.DecodingOptions(fp16=False)
+        result = whisper.decode(model, mel, options)
+
+        st.write("Текст:", result.text)
+    except Exception as e:
+        st.error(f"Произошла ошибка: {e}")
+    finally:
+        # Удаляем временный файл после использования
+        os.remove(temp_audio_path)
 else:
     st.warning("Аудио не было записано.")
