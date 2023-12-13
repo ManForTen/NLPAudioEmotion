@@ -45,7 +45,7 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
-    audio = whisper.load_audio(sr)
+    audio = whisper.load_audio(uploaded_file)
     audio = whisper.pad_or_trim(audio)
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
