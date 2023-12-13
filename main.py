@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import whisper
 import os
 import tempfile
+import soundfile as sf
 
 model = whisper.load_model("base")
 
