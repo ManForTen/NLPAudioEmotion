@@ -4,7 +4,8 @@ import numpy as np
 import librosa.display
 import matplotlib.pyplot as plt
 import whisper
-
+import os
+import tempfile
 
 model = whisper.load_model("base")
 
@@ -22,10 +23,15 @@ uploaded_file = st.file_uploader("Загрузите аудиофайл (доп�
 if uploaded_file:
     st.write("Файл успешно загружен!")
 
-    # Преобразование байтов в аудиофайл
-    y, sr = librosa.load(uploaded_file, sr=None)
+    # Save the uploaded file to a temporary file
+    temp_file_path = os.path.join(tempfile.gettempdir(), "uploaded_audio.wav")
+    with open(temp_file_path, "wb") as temp_file:
+        temp_file.write(uploaded_file.read())
 
-    st.audio(uploaded_file, format='audio/wav')
+    # Преобразование байтов в аудиофайл
+    y, sr = librosa.load(temp_file_path, sr=None)
+
+    st.audio(temp_file_path, format='audio/wav')
 
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
@@ -45,7 +51,7 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     st.subheader("Распознавание текста:")
-    audio = whisper.load_audio(uploaded_file)
+    audio = whisper.load_audio(temp_file_path)
     audio = whisper.pad_or_trim(audio)
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
