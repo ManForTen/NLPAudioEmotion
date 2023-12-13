@@ -14,20 +14,27 @@ st.write("""
 wav_audio_data = st_audiorec()
 
 if wav_audio_data is not None:
+    # Преобразование аудио в формат, поддерживаемый whisper
     audio = whisper.load_audio(wav_audio_data)
-    audio = whisper.pad_or_trim(audio)
 
-    # Используем конструктор WhisperASR
-    model = whisper.WhisperASR(model_size="medium")
+    if audio is not None:
+        audio = whisper.pad_or_trim(audio)
 
-    mel = whisper.log_mel_spectrogram(audio).to(model.device)
-    _, probs = model.detect_language(mel)
-    st.write(f"Язык аудио: {max(probs, key=probs.get)}")
+        # Используем конструктор WhisperASR
+        model = whisper.WhisperASR(model_size="medium")
 
-    options = whisper.DecodingOptions(fp16=False)
-    result = whisper.decode(model, mel, options)
+        mel = whisper.log_mel_spectrogram(audio).to(model.device)
+        _, probs = model.detect_language(mel)
+        st.write(f"Язык аудио: {max(probs, key=probs.get)}")
 
-    st.write("Текст:", result.text)
+        options = whisper.DecodingOptions(fp16=False)
+        result = whisper.decode(model, mel, options)
+
+        st.write("Текст:", result.text)
+    else:
+        st.warning("Не удалось прочитать аудио.")
+else:
+    st.warning("Аудио не было записано.")
 
 
 
