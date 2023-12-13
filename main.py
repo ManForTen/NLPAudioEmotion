@@ -23,11 +23,11 @@ wav_audio_data = st_audiorec()
 # Загрузка аудиофайла
 uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)", type=["wav"])
 
-if uploaded_file:
+if wav_audio_data is not None:
     st.write("Файл успешно загружен!")
 
     # Преобразование байтов в аудиофайл
-    y, sr = librosa.load(uploaded_file, sr=None)
+    y, sr = librosa.load(wav_audio_data, sr=None)
 
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
