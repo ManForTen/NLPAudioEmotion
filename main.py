@@ -29,6 +29,13 @@ if uploaded_file:
     # Преобразование байтов в аудиофайл
     y, sr = librosa.load(uploaded_file, sr=None)
 
+    # Воспроизведение аудио
+    st.subheader("Воспроизведение аудио:")
+    audio_data = BytesIO()
+    librosa.output.write_wav(audio_data, y, sr)
+    audio_data.seek(0)
+    st.audio(audio_data, format="audio/wav", start_time=0)
+
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
     fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
