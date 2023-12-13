@@ -23,14 +23,19 @@ if uploaded_file:
     st.write("Файл успешно загружен!")
 
     # Преобразование байтов в аудиофайл
-    y, sr = librosa.load(uploaded_file, sr=None)
+    audio, sample_rate = whisper.read_wave(uploaded_file)
+    audio = whisper.pad_or_trim(audio)
+    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    _, probs = model.detect_language(mel)
+    detected_language = max(probs, key=probs.get)
 
     st.audio(uploaded_file, format='audio/wav')
+    st.subheader(f"Распознанный язык: {detected_language}")
 
     # Построение графика временного сигнала (waveplot)
     st.subheader("Waveplot:")
     fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
-    ax_wave.plot(np.linspace(0, len(y) / sr, len(y)), y)
+    ax_wave.plot(np.linspace(0, len(audio) / sample_rate, len(audio)), audio)
     ax_wave.set_title('Waveplot')
     ax_wave.set_xlabel('Время (сек.)')
     ax_wave.set_ylabel('Amplitude')
@@ -39,17 +44,7 @@ if uploaded_file:
     # Построение спектрограммы
     st.subheader("Spectrogram:")
     fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
-    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
+    img = librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(audio), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec, cmap='viridis')
     plt.colorbar(img, format='%+2.0f dB')
     ax_spec.set_title('Spectrogram')
     st.pyplot(fig_spec)
-
-    st.subheader("Распознавание текста:")
-    audio = whisper.load_audio(y)
-    audio = whisper.pad_or_trim(audio)
-    mel = whisper.log_mel_spectrogram(audio).to(model.device)
-    _, probs = model.detect_language(mel)
-    st.write(f"Язык аудио: {max(probs, key=probs.get)}")
-    options = whisper.DecodingOptions(fp16=False)
-    result = whisper.decode(model, mel, options)
-    st.write("Текст:", result.text)
