@@ -19,25 +19,29 @@ st.write("""
 
 wav_audio_data = st_audiorec()
 
-# Выбор загруженного .wav файла
-uploaded_files = st.file_uploader("Загрузите записанный голос", accept_multiple_files=True)
 
-# Для каждого загруженного файла
-for uploaded_file in uploaded_files:
-    # Чтение аудиофайла
-    audio_tensor, sample_rate = torchaudio.load(uploaded_file)
+# Загрузка аудиофайла
+uploaded_file = st.file_uploader("Загрузите аудиофайл (допускаются файлы формата wav)")
 
-    # Проверка, что аудио моно (1 канал)
-    if audio_tensor.shape[0] == 2:
-        audio_tensor = audio_tensor.mean(dim=0, keepdim=True)
+if uploaded_file:
+    st.write("Файл успешно загружен!")
 
-    # Применение преобразований, например, вычисление спектрограммы
-    transform = T.MelSpectrogram(sample_rate=sample_rate, n_mels=128)
-    mel_spectrogram = transform(audio_tensor)
+    # Преобразование байтов в аудиофайл
+    y, sr = librosa.load(uploaded_file, sr=None)
 
-    # Нормализация значений спектрограммы в диапазон [0.0, 1.0]
-    normalized_mel_spectrogram = (mel_spectrogram - mel_spectrogram.min()) / (mel_spectrogram.max() - mel_spectrogram.min())
+    # Построение графика временного сигнала (waveplot)
+    st.subheader("Waveplot:")
+    fig_wave, ax_wave = plt.subplots(figsize=(12, 4))
+    librosa.display.waveshow(y, sr=sr, ax=ax_wave)
+    ax_wave.set_title('Waveplot')
+    ax_wave.set_xlabel('Время (сек.)')
+    ax_wave.set_ylabel('Amplitude')
+    st.pyplot(fig_wave)
 
-    # Вывод спектрограммы
-    st.write(f"Спектрограмма для файла: {uploaded_file.name}")
-    st.image(normalized_mel_spectrogram[0].numpy(), caption='Мел-спектрограмма', use_column_width=True)
+    # Построение спектрограммы
+    st.subheader("Spectrogram:")
+    fig_spec, ax_spec = plt.subplots(figsize=(10, 4))
+    librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time', ax=ax_spec)
+    plt.colorbar(format='%+2.0f dB')
+    ax_spec.set_title('Spectrogram')
+    st.pyplot(fig_spec)
