@@ -24,24 +24,23 @@ def plot_audio_info_with_emotion(uploaded_file):
         y, sr = librosa.load(uploaded_file, sr=None)
 
         # Построение графика временного сигнала (waveplot)
-        st.pyplot(plt.figure(figsize=(12, 4)))
+        fig_wave = plt.figure(figsize=(12, 4))
         librosa.display.waveshow(y, sr=sr)
         plt.title('Waveplot')
         plt.xlabel('Время (сек.)')
         plt.ylabel('Amplitude')
         plt.title('Waveplot')
+        st.pyplot(fig_wave)
 
         # Построение спектрограммы
-        st.pyplot(plt.figure(figsize=(10, 4)))
+        fig_spec = plt.figure(figsize=(10, 4))
         librosa.display.specshow(librosa.amplitude_to_db(librosa.stft(y), ref=np.max), y_axis='log', x_axis='time')
         plt.colorbar(format='%+2.0f dB')
         plt.title('Spectrogram')
-
-
+        st.pyplot(fig_spec)
 
     except Exception as e:
         st.error(f"Ошибка при обработке файла: {e}")
-
 
 # Загрузка аудиофайлов и вывод графиков
 uploaded_files = st.file_uploader("Загрузите записанный голос", accept_multiple_files=True)
