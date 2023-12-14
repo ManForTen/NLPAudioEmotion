@@ -38,20 +38,20 @@ if uploaded_file:
     st.pyplot(fig_spec)
 
     # Определение эмоции
-    st.subheader("Эмоция:")
+    #st.subheader("Эмоция:")
 
     # Явная загрузка модели и токенизатора
-    model_name = "maksimekin/emotion-audio"
-    model = AutoModelForSequenceClassification.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    #model_name = "maksimekin/emotion-audio"
+    #model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    #tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Преобразование аудио в текст с использованием токенизатора
-    inputs = tokenizer(" ".join(map(str, y[0].numpy())), return_tensors="pt", padding=True, truncation=True)
+    #inputs = tokenizer(" ".join(map(str, y[0].numpy())), return_tensors="pt", padding=True, truncation=True)
 
     # Классификация эмоции
-    outputs = model(**inputs)
-    logits = outputs.logits
-    predicted_class = torch.argmax(logits, dim=1).item()
+    #outputs = model(**inputs)
+    #logits = outputs.logits
+    #predicted_class = torch.argmax(logits, dim=1).item()
 
     # Отображение результата
-    st.write(f"Predicted Emotion: {predicted_class}")
+    #st.write(f"Predicted Emotion: {predicted_class}")
